@@ -1,0 +1,21 @@
+python 7-endpoint-integration-server/medical_report_server_selfhost.py
+
+启动后如何运行：
+在本地运行，使用：http://安全组的localhost:80/health
+
+换路径
+cd 8-frontend-apps/HealthAssistantWebApp/
+
+再次运行启动：
+python -m http.server
+
+访问：
+http://安全组的localhost:8000
+
+
+
+端口被占用情况：
+lsof -i :端口号
+kill -9 PID
+再次运行启动：
+python -m http.server

@@ -1,0 +1,4 @@
+Unsloth error message:
+Executing: 
+1.%pip install --upgrade packaging
+2. Re-run the entire file cloudstudio-init-unsloth.ipynb

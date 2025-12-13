@@ -1,0 +1,25 @@
+需要配置安全组: 0.0.0.0/0 TCP:8000         ::/0  TCP:8000
+检查端口：
+apt install iproute2
+ss -tulpn | grep :8000
+apt install telnet
+ss -tulpn | grep :8000
+
+
+
+conda create -n vllm-vl-env python=3.10 -y
+conda activate vllm-vl-env
+pip install vllm==0.10.0
+
+
+
+(base) python 6-fine-tuning-vl/fine-tuning-qwen25vl-7b-offical.py
+
+(vllm-v1-env) vllm serve ./qwen25vl-7b-offical-finetuned/  --host 0.0.0.0  --port 8000  --max-model-len=32k
+
+(base) python 6-fine-tuning-vl/vllm_image_via_request_base64.py
+
+(base) python 6-fine-tuning-vl/Analysis_Medical_Report.py
+
+
+vllm serve /workspace/qwen25vl-7b-offical-finetuned --host 0.0.0.0 --port 8000 --max-model-len=16k --gpu-memory-utilization 0.4 --tensor-parallel-size 1 --enforce-eager --kv-cache-dtype fp8_e4m3

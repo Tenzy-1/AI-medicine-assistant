@@ -1,0 +1,1 @@
+vllm serve ./qwen25-14b-unsloth-finetuned-bnb-4bit/  --host 0.0.0.0  --port 80  --max-model-len=1024
