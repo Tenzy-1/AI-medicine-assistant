@@ -1,0 +1,216 @@
+========================================================================================================================
+Medical Report Comprehensive Analysis Summary Report
+Generated Time: 2025-12-03 17:47:33
+Statistics: Total Reports 10 | Successfully Processed 7 | Failed 3 | Valid Data 5
+========================================================================================================================
+
+[Report 1] Image Filename: scan_item10-_69.jpg | Processing Status: failed
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+Processing failed due to request/network error. Error: HTTPConnectionPool(host='43.156.5.91', port=8000): Read timed out. (read timeout=90)...
+
+=== 医疗报告完整分析（中文）===
+处理失败（请求/网络错误）。错误：HTTPConnectionPool(host='43.156.5.91', port=8000): Read timed out. (read timeout=90)...
+====================================================================================================
+
+[Report 2] Image Filename: scan_item10-_70.jpg | Processing Status: success
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+No valid medical report data extracted.
+
+=== 医疗报告完整分析（中文）===
+未提取到有效的医疗报告数据。
+====================================================================================================
+
+[Report 3] Image Filename: scan_item10-_71.jpg | Processing Status: success
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+**Overview:**
+- The patient's coagulation test results are within the normal range, except for the prolonged activated partial thromboplastin time (APTT) and prothrombin time (PT) which are slightly elevated.
+
+**Abnormal Indicators:**
+- **PT (Prothrombin Time):** 10.10 seconds (Reference Range: 10-14 seconds)
+- **APTT (Activated Partial Thromboplastin Time):** 19.00 seconds (Reference Range: 23-35 seconds)
+- **Fbg (Fibrinogen):** 3.527 g/L (Reference Range: 2-4 g/L)
+
+**Conclusion:**
+- The slight elevation in PT and APTT suggests a potential coagulation disorder. Fibrinogen levels are within the normal range. Further investigation is recommended to determine the underlying cause of the prolonged coagulation times. This could be due to a variety of factors including liver dysfunction, vitamin K deficiency, or other coagulation factor deficiencies. A detailed clinical history and additional tests may be necessary to confirm the diagnosis and guide appropriate management.
+
+---
+
+### === 医疗报告完整分析（中文） ===
+
+**概述:**
+- 该患者的凝血试验结果在正常范围内，除了活化部分凝血活酶时间（APTT）和凝血酶原时间（PT）略有升高外。
+
+**异常指标:**
+- **PT（凝血酶原时间）:** 10.10秒（参考范围: 10-14秒）
+- **APTT（活化部分凝血活酶时间）:** 19.00秒（参考范围: 23-35秒）
+- **Fbg（纤维蛋白原）:** 3.527 g/L（参考范围: 2-4 g/L）
+
+**结论:**
+- 凝血酶原时间和活化部分凝血活酶时间的轻度升高提示可能存在凝血障碍。纤维蛋白原水平在正常范围内。进一步的检查是必要的，以确定凝血时间延长的原因。这可能是由于肝功能异常、维生素K缺乏或其他凝血因子缺乏等。需要详细的临床病史和额外的测试来确认诊断并指导适当的管理。
+
+=== 医疗报告完整分析（中文）===
+1. 概述：所有检测指标均在正常参考范围内。
+2. 异常指标：无
+3. 结论：基于本报告未发现健康风险。
+
+注：缺少具体指标数据（数值/参考范围）。请核对原始报告。
+====================================================================================================
+
+[Report 4] Image Filename: scan_item10-_72.jpg | Processing Status: success
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+**Overview:**
+- The patient's blood test results for hepatitis B markers are as follows:
+  - HBsAg (Hepatitis B surface antigen) is 0.014 ng/L (within the reference range of 0-0.2 ng/L).
+  - Anti-HBs (Hepatitis B surface antibody) is 475.473 MIU/mL (within the reference range of 0-10 MIU/mL).
+  - HBeAg (Hepatitis B e antigen) is 0.000 U/mL (within the reference range of 0-0.5 U/mL).
+  - Anti-HBe (Hepatitis B e antibody) is 0.140 U/mL (within the reference range of 0-0.2 U/mL).
+  - Anti-HBc (Hepatitis B core antibody) is 2.210 U/mL (within the reference range of 0-0.9 U/mL).
+  - HBsAg and HBeAg are both negative, indicating no active hepatitis B infection.
+
+**Abnormal Indicators:**
+- None
+
+**Conclusion:**
+- The patient is in a state of immunity against hepatitis B, as indicated by the high level of Anti-HBs and the absence of active hepatitis B markers (HBsAg and HBeAg). This suggests that the patient has likely been vaccinated or has recovered from a previous hepatitis B infection.
+
+###
+
+=== 医疗报告完整分析（中文）===
+**概述:**
+- 该患者乙肝指标检测结果如下:
+  - 乙肝表面抗原（HBV Surface Antigen）（乙肝表面抗原）为0.014 ng/L（参考范围0-0.2 ng/L）。
+  - 乙肝表面抗体（HBV Surface Antibody）（乙肝表面抗体）为475.473 MIU/mL（参考范围0-10 MIU/mL）。
+  - 乙肝e抗原（HBV e Antigen）（乙肝e抗原）为0.000 U/mL（参考范围0-0.5 U/mL）。
+  - 乙肝e抗体（HBV e Antibody）（乙肝e抗体）为0.140 U/mL（参考范围0-0.2 U/mL）。
+  - 乙肝核心抗体（HBV Core Antibody）（乙肝核心抗体）为2.210 U/mL（参考范围0-0.9 U/mL）。
+  - HBsAg和HBeAg均为阴性，表明无活动性乙肝感染。
+
+**异常指标:**
+- 无异常指标
+
+**结论:**
+- 该患者处于乙肝免疫状态，由于Anti-HBs水平高，且无活动性乙肝指标（HBsAg和HBeAg），表明该患者可能已经接种过乙肝疫苗或从乙肝感染中恢复。
+====================================================================================================
+
+[Report 5] Image Filename: scan_item10-_73.jpg | Processing Status: failed
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+Processing failed due to request/network error. Error: HTTPConnectionPool(host='43.156.5.91', port=8000): Read timed out. (read timeout=90)...
+
+=== 医疗报告完整分析（中文）===
+处理失败（请求/网络错误）。错误：HTTPConnectionPool(host='43.156.5.91', port=8000): Read timed out. (read timeout=90)...
+====================================================================================================
+
+[Report 6] Image Filename: scan_item10-_74.jpg | Processing Status: failed
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+Processing failed due to request/network error. Error: HTTPConnectionPool(host='43.156.5.91', port=8000): Read timed out. (read timeout=90)...
+
+=== 医疗报告完整分析（中文）===
+处理失败（请求/网络错误）。错误：HTTPConnectionPool(host='43.156.5.91', port=8000): Read timed out. (read timeout=90)...
+====================================================================================================
+
+[Report 7] Image Filename: scan_item10-_75.jpg | Processing Status: success
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+This medical report includes the results of tests for HCV (Hepatitis C Virus) antibodies, HIV (Human Immunodeficiency Virus) antibodies, Treponema pallidum (T. pallidum) antibodies, and RPR (Rapid Plasma Reagins) test. All results are within the normal range.
+
+- **HCV (Hepatitis C Virus) Antibodies (Anti-HCV-IgG):** Negative (-)
+- **HIV (Human Immunodeficiency Virus) Antibodies (HIV (1+2) Antibodies):** Negative (-)
+- **Treponema pallidum (T. pallidum) Antibodies (Anti-TP):** Negative (-)
+- **RPR (Rapid Plasma Reagins):** Negative (-)
+
+###
+
+Note: Missing specific indicator data (value/reference range). Recheck original report.
+
+=== 医疗报告完整分析（中文）===
+本报告包括丙肝抗体（丙肝抗体（HCV-IgG））、艾滋病病毒抗体（HIV (1+2) 抗体）、梅毒螺旋体抗体（梅毒螺旋体抗体（Anti-TP））和RPR（快速血浆反应素）的检测结果。所有结果均在正常范围内。
+
+- **丙肝抗体（丙肝抗体（HCV-IgG））:** 阴性（-）
+- **艾滋病病毒抗体（HIV (1+2) 抗体）:** 阴性（-）
+- **梅毒螺旋体抗体（梅毒螺旋体抗体（Anti-TP））:** 阴性（-）
+- **快速血浆反应素（RPR）（快速血浆反应素）:** 阴性（-）
+
+注：缺少具体指标数据（数值/参考范围）。请核对原始报告。
+====================================================================================================
+
+[Report 8] Image Filename: scan_item10-_76.jpg | Processing Status: success
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+- **Overview:**
+  - ABO Blood Type: B
+  - RH Blood Type: D positive, C positive, E negative
+
+- **Abnormal Indicators:**
+  - RH Blood Type: D positive, C positive
+
+- **Conclusion:**
+  - The patient is blood type B with positive D and C antigens on the RH blood type. This is within the normal range for ABO and RH blood types. No clinical implications are noted based on these results.
+
+###
+
+Note: Missing specific indicator data (value/reference range). Recheck original report.
+
+=== 医疗报告完整分析（中文）===
+- **概述:**
+  - ABO血型: B
+  - RH血型: D阳性, C阳性, E阴性
+
+- **异常指标:**
+  - RH血型: D阳性, C阳性
+
+- **结论:**
+  - 该患者为B型血，RH血型为D阳性、C阳性，均在正常范围内。根据这些结果，未见临床意义异常。
+
+注：缺少具体指标数据（数值/参考范围）。请核对原始报告。
+====================================================================================================
+
+[Report 9] Image Filename: scan_item10-_77.jpg | Processing Status: success
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+No valid medical report data extracted.
+
+=== 医疗报告完整分析（中文）===
+未提取到有效的医疗报告数据。
+====================================================================================================
+
+[Report 10] Image Filename: scan_item10-_78.jpg | Processing Status: success
+----------------------------------------------------------------------------------------------------
+=== Medical Report Full Analysis (English) ===
+- **Overview:**
+  - The patient's test results for hepatitis B markers are as follows:
+    - HBsAg (HBV surface antigen): Negative (-)
+    - Anti-HBs (HBV surface antibody): 1.637 MIU/mL (within reference range 0-10 MIU/mL)
+    - Anti-HBe (HBV e antigen): Negative (-)
+    - Anti-HBc (HBV core antibody): 0.087 U/mL (within reference range 0-0.2 U/mL)
+    - Anti-HBcIgM (HBV core antibody IgM): 0.403 U/mL (within reference range 0-0.9 U/mL)
+
+- **Abnormal Indicators:**
+  - None
+
+- **Conclusion:**
+  - The patient is currently in a state of hepatitis B immunity, as indicated by the positive Anti-HBs and the negative HBsAg. There is no evidence of active hepatitis B infection. The patient has likely been vaccinated or has had a past infection that has resolved, as indicated by the positive Anti-HBc and Anti-HBcIgM. No further treatment is required at this time.
+
+###
+
+=== 医疗报告完整分析（中文）===
+- **概述:**
+  - 该患者乙肝指标检测结果如下:
+    - 乙肝表面抗原（HBV Surface Antigen） (HBV表面抗原): 阴性 (-)
+    - 乙肝表面抗体（HBV Surface Antibody） (HBV表面抗体): 1.637 MIU/mL (参考范围 0-10 MIU/mL)
+    - 乙肝e抗体（HBV e Antibody） (HBV e抗原): 阴性 (-)
+    - 乙肝核心抗体（HBV Core Antibody） (HBV核心抗体): 0.087 U/mL (参考范围 0-0.2 U/mL)
+    - Anti-HBcIgM (HBV核心抗体IgM): 0.403 U/mL (参考范围 0-0.9 U/mL)
+
+- **异常指标:**
+  - 无
+
+- **结论:**
+  - 该患者目前处于乙肝免疫状态，因Anti-HBs阳性，HBsAg阴性，提示无活动性乙肝感染。患者可能已经接种过乙肝疫苗或曾有过乙肝感染，现已恢复，因Anti-HBc和Anti-HBcIgM阳性。目前无需进一步治疗。
+====================================================================================================
+

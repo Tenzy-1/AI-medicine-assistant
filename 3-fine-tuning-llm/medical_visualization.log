@@ -1,0 +1,15 @@
+2025-12-15 01:49:35,620 - __main__ - ERROR - 未找到Excel文件（模式: medical_test_results_*.xlsx），请设置EXCEL_PATH环境变量或确保文件存在于: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm
+2025-12-15 01:50:56,146 - __main__ - INFO - 自动找到Excel文件: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm\medical_test_results_20251130_173723(1).xlsx
+2025-12-15 01:50:56,148 - __main__ - INFO - ================================================================================
+2025-12-15 01:50:56,150 - __main__ - INFO - 开始生成可视化图表
+2025-12-15 01:50:56,154 - __main__ - INFO - ================================================================================
+2025-12-15 01:50:56,163 - __main__ - INFO - 读取Excel文件: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm\medical_test_results_20251130_173723(1).xlsx
+2025-12-15 01:50:57,161 - __main__ - INFO - 成功读取 10 条测试记录
+2025-12-15 01:51:01,851 - __main__ - INFO - 图表1已保存: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm\medical_visualization_charts\1_Model_Test_Status_and_Success_Rate.png
+2025-12-15 01:51:02,534 - __main__ - INFO - 图表2已保存: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm\medical_visualization_charts\2_Answer_Key_Information_Completeness.png
+2025-12-15 01:51:03,486 - __main__ - INFO - 图表3已保存: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm\medical_visualization_charts\3_CN-EN_Answer_Consistency_Heatmap.png
+2025-12-15 01:51:04,194 - __main__ - INFO - 图表4已保存: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm\medical_visualization_charts\4_Defect_Type_and_Priority_Optimization.png
+2025-12-15 01:51:04,197 - __main__ - INFO - ================================================================================
+2025-12-15 01:51:04,197 - __main__ - INFO - 所有图表生成完成!
+2025-12-15 01:51:04,198 - __main__ - INFO - 保存目录: D:\tuling\Code_and_Powerpoint\code\3-fine-tuning-llm\medical_visualization_charts
+2025-12-15 01:51:04,199 - __main__ - INFO - ================================================================================

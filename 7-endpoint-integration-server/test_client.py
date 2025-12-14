@@ -1,4 +1,5 @@
 import requests
+from pathlib import Path
 
 def test_medical_report_analysis():
     """
@@ -8,9 +9,9 @@ def test_medical_report_analysis():
     
     # Replace with the path to an actual medical report image
     # Use absolute path or path relative to script location
-    import os
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    image_path = os.path.join(script_dir, "..", "6-fine-tuning-vl", "test-img", "scan_item10-_71.jpg")
+    script_dir = Path(__file__).parent
+    # 使用Path对象处理相对路径，更可靠
+    image_path = (script_dir.parent / "6-fine-tuning-vl" / "test-img" / "scan_item10-_71.jpg").resolve()
     
     try:
         with open(image_path, 'rb') as image_file:

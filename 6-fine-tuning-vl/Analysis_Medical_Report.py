@@ -24,7 +24,7 @@ COLORS = {
 }
 
 # Test results file path (Ensure this path is correct)
-RESULTS_FILE = "./Medical_Report_Interpretation_Full_Report.txt"
+RESULTS_FILE = "Medical_Report_Interpretation_Full_Report.txt"
 # Chart output directory
 OUTPUT_DIR = "./medical_vlm_visualization"
 os.makedirs(OUTPUT_DIR, exist_ok=True)

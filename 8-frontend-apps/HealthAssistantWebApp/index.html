@@ -3,36 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>医疗报告助手</title>
+    <meta name="description" content="智能医疗报告分析助手 - 专业的AI医疗报告解读服务">
+    <title>智能医疗报告助手</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>医疗报告助手</h1>
-        </header>
-        
-        <div class="chat-container" id="chatContainer">
-            <div class="welcome-message">
-                <p>欢迎使用医疗报告助手！请上传您的医疗检测报告图片以获取分析和健康建议。</p>
+    <div class="app-container">
+        <!-- 侧边栏（桌面端） -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn" title="新建对话">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span>新建对话</span>
+                </button>
             </div>
-        </div>
-        
-        <div class="input-container">
-            <div class="image-preview-container" id="imagePreviewContainer" style="display: none;">
-                <img id="imagePreview" src="" alt="Image preview">
-                <button class="remove-image-btn" id="removeImageBtn">×</button>
+            <div class="sidebar-content">
+                <div class="chat-history" id="chatHistory">
+                    <!-- 历史对话将在这里显示 -->
+                </div>
             </div>
-            
-            <div class="input-area">
-                <label for="imageInput" class="image-input-label" id="imageInputLabel">
-                    <span class="plus-icon">+</span>
-                    <span>选择图片</span>
-                </label>
-                <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                <button id="sendButton" class="send-button" disabled>发送</button>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 3V1M10 19V17M17 10H19M1 10H3M15.657 4.343L16.778 3.222M3.222 16.778L4.343 15.657M15.657 15.657L16.778 16.778M3.222 3.222L4.343 4.343M14 10C14 12.2091 12.2091 14 10 14C7.79086 14 6 12.2091 6 10C6 7.79086 7.79086 6 10 6C12.2091 6 14 7.79086 14 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
             </div>
-        </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="top-bar">
+                <button class="sidebar-toggle" id="sidebarToggle" title="切换侧边栏">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <h1 class="app-title">智能医疗报告助手</h1>
+                <div class="header-actions">
+                    <span class="status-indicator" id="statusIndicator">就绪</span>
+                </div>
+            </header>
+
+            <!-- 聊天容器 -->
+            <div class="chat-container" id="chatContainer">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-icon">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="2"/>
+                            <path d="M32 20V32L40 36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h2>欢迎使用智能医疗报告助手</h2>
+                    <p>上传您的医疗检测报告图片，获取专业的AI分析和健康建议</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M16.7071 5.29289C17.0976 5.68342 17.0976 6.31658 16.7071 6.70711L8.70711 14.7071C8.31658 15.0976 7.68342 15.0976 7.29289 14.7071L3.29289 10.7071C2.90237 10.3166 2.90237 9.68342 3.29289 9.29289C3.68342 8.90237 4.31658 8.90237 4.70711 9.29289L8 12.5858L15.2929 5.29289C15.6834 4.90237 16.3166 4.90237 16.7071 5.29289Z" fill="currentColor"/>
+                            </svg>
+                            <span>智能图像识别</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M16.7071 5.29289C17.0976 5.68342 17.0976 6.31658 16.7071 6.70711L8.70711 14.7071C8.31658 15.0976 7.68342 15.0976 7.29289 14.7071L3.29289 10.7071C2.90237 10.3166 2.90237 9.68342 3.29289 9.29289C3.68342 8.90237 4.31658 8.90237 4.70711 9.29289L8 12.5858L15.2929 5.29289C15.6834 4.90237 16.3166 4.90237 16.7071 5.29289Z" fill="currentColor"/>
+                            </svg>
+                            <span>专业医学分析</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M16.7071 5.29289C17.0976 5.68342 17.0976 6.31658 16.7071 6.70711L8.70711 14.7071C8.31658 15.0976 7.68342 15.0976 7.29289 14.7071L3.29289 10.7071C2.90237 10.3166 2.90237 9.68342 3.29289 9.29289C3.68342 8.90237 4.31658 8.90237 4.70711 9.29289L8 12.5858L15.2929 5.29289C15.6834 4.90237 16.3166 4.90237 16.7071 5.29289Z" fill="currentColor"/>
+                            </svg>
+                            <span>个性化健康建议</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="input-container">
+                <div class="image-preview-container" id="imagePreviewContainer" style="display: none;">
+                    <!-- 图片预览将通过JavaScript动态添加 -->
+                </div>
+                
+                <div class="input-area">
+                    <label for="imageInput" class="image-input-label" id="imageInputLabel">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 3V17M3 10H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>选择医疗报告图片</span>
+                    </label>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <button id="sendButton" class="send-button" disabled title="发送分析请求">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M18 2L9 11M18 2L12 18L9 11M18 2L2 8L9 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
     </div>
     
     <script src="script.js"></script>

@@ -1,21 +1,50 @@
+"""
+微调模型测试脚本
+优化版本：改进了配置管理、重试机制、错误处理和日志记录
+"""
 from openai import OpenAI
 import pandas as pd
 from datetime import datetime
 import os
+import sys
 import time
+import logging
+from pathlib import Path
+from typing import Dict, Optional
 
-openai_api_key = "ollama"
-openai_api_base = "http://43.156.36.231:80/v1"
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('test_fine_tuned_llm.log', encoding='utf-8')
+    ]
+)
+logger = logging.getLogger(__name__)
 
+# 配置参数（可通过环境变量覆盖）
+CONFIG = {
+    'openai_api_key': os.getenv('OPENAI_API_KEY', 'ollama'),
+    'openai_api_base': os.getenv('OPENAI_API_BASE', 'http://43.156.36.231:80/v1'),
+    'model_name': os.getenv('MODEL_NAME', '/workspace/qwen25-14b-offical-finetuned-bnb-4bit'),
+    'max_tokens': int(os.getenv('MAX_TOKENS', '600')),
+    'retry_times': int(os.getenv('RETRY_TIMES', '3')),  # 改进：默认3次重试
+    'retry_delay': float(os.getenv('RETRY_DELAY', '2.0')),  # 重试延迟（秒）
+    'timeout': int(os.getenv('API_TIMEOUT', '60')),  # API超时时间（秒）
+    'temperature': float(os.getenv('TEMPERATURE', '0.6')),
+    'output_dir': os.getenv('OUTPUT_DIR', 'medical_test_results'),
+}
 
+# 初始化客户端
 client = OpenAI(
-    api_key=openai_api_key,
-    base_url=openai_api_base,
+    api_key=CONFIG['openai_api_key'],
+    base_url=CONFIG['openai_api_base'],
+    timeout=CONFIG['timeout'],
 )
 
-
-MAX_TOKENS = 600
-RETRY_TIMES = 1
+MAX_TOKENS = CONFIG['max_tokens']
+RETRY_TIMES = CONFIG['retry_times']
 HEADER_SEPARATOR = "=" * 90  
 CONTENT_SEPARATOR = "-" * 90  
 INDENT = "  "  
@@ -88,11 +117,25 @@ def clean_irrelevant_content(text):
     text = text.replace("{", "").replace("}", "").strip()
     return text if text and text.strip() != " " else "No valid Chinese answer provided"
 
-def get_medical_response(question_en, question_cn, retry=0):
+def get_medical_response(question_en: str, question_cn: str, retry: int = 0) -> Dict[str, str]:
+    """
+    获取医疗咨询响应（改进版：更好的错误处理和重试机制）
+    
+    Args:
+        question_en: 英文问题
+        question_cn: 中文问题
+        retry: 当前重试次数
+    
+    Returns:
+        包含status、english_answer和chinese_answer的字典
+    """
     full_question = f"{question_en}（{question_cn}）"
+    
     try:
+        logger.debug(f"发送请求 (重试 {retry}/{RETRY_TIMES}): {full_question[:50]}...")
+        
         response = client.chat.completions.create(
-            model="/workspace/qwen25-14b-offical-finetuned-bnb-4bit",
+            model=CONFIG['model_name'],
             messages=[
                 {
                     "role": "assistant",
@@ -101,15 +144,24 @@ def get_medical_response(question_en, question_cn, retry=0):
                               "1. English Answer: 3-4 key points (causes + core suggestions + precautions), no redundancy, complete sentences. "
                               "2. Separator: '---Chinese Version---' (exact wording). "
                               "3. Chinese Answer: Accurate translation of English, concise, complete, no extra content. "
-                              "4. Ensure completeness within {MAX_TOKENS} tokens, no truncated sentences."
+                              f"4. Ensure completeness within {MAX_TOKENS} tokens, no truncated sentences."
                 },
                 {"role": "user", "content": full_question}
             ],
             stream=False,
-            temperature=0.6,
+            temperature=CONFIG['temperature'],
             max_tokens=MAX_TOKENS,
         )
+        
+        if not response.choices or not response.choices[0].message:
+            raise ValueError("API响应格式异常：缺少choices或message")
+        
         answer = response.choices[0].message.content.strip()
+        
+        if not answer:
+            raise ValueError("API返回空答案")
+        
+        # 解析答案
         separator = "---Chinese Version---"
         
         if separator in answer:
@@ -117,6 +169,7 @@ def get_medical_response(question_en, question_cn, retry=0):
             en_part = en_part.strip()
             cn_part = cn_part.strip()
         else:
+            # 尝试自动检测中英文分界
             cn_start_idx = None
             for i, char in enumerate(answer):
                 if '\u4e00' <= char <= '\u9fff':
@@ -129,29 +182,39 @@ def get_medical_response(question_en, question_cn, retry=0):
                 en_part = answer
                 cn_part = "No corresponding Chinese translation"
        
+        # 清理无关内容
         cn_part = clean_irrelevant_content(cn_part)
         en_part = en_part if en_part else "No valid English answer provided"
         
+        # 验证答案完整性
         if not any(k in en_part.lower() for k in ["cause", "suggest", "recommend", "note", "step"]):
             en_part += " Core recommendations: Consult a healthcare provider for personalized evaluation and follow-up."
         if not any(k in cn_part for k in ["原因", "建议", "推荐", "注意", "步骤"]):
             cn_part += " 核心建议：咨询医疗专业人员进行个性化评估和随访。"
+        
+        logger.debug(f"成功获取响应 (重试 {retry})")
         
         return {
             "status": "success",
             "english_answer": en_part,
             "chinese_answer": cn_part
         }
+        
     except Exception as e:
-        error_msg = str(e)[:100]
+        error_msg = str(e)
+        logger.warning(f"请求失败 (重试 {retry}/{RETRY_TIMES}): {error_msg[:100]}")
+        
         if retry < RETRY_TIMES:
-            print(f"{INDENT}[Retry {retry+1}/{RETRY_TIMES}] Retrying due to error: {error_msg[:50]}...")
-            time.sleep(1)
-            return get_medical_response(question_en, question_cn, retry+1)
+            delay = CONFIG['retry_delay'] * (retry + 1)  # 指数退避
+            logger.info(f"等待 {delay:.1f} 秒后重试...")
+            time.sleep(delay)
+            return get_medical_response(question_en, question_cn, retry + 1)
+        
+        logger.error(f"请求最终失败 (已重试 {RETRY_TIMES} 次): {error_msg}")
         return {
             "status": "failed",
-            "english_answer": f"Failed after {RETRY_TIMES+1} attempts: {error_msg}",
-            "chinese_answer": f"经{RETRY_TIMES+1}次尝试失败：{error_msg}"
+            "english_answer": f"Failed after {RETRY_TIMES + 1} attempts: {error_msg[:200]}",
+            "chinese_answer": f"经{RETRY_TIMES + 1}次尝试失败：{error_msg[:200]}"
         }
 
 def format_full_answer(answer, prefix):
@@ -207,29 +270,45 @@ def batch_test_and_summary(test_questions):
         })
     
 
-    # Use absolute path based on current script location
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(script_dir, "medical_test_results")
-    os.makedirs(output_dir, exist_ok=True)
+    # 使用配置的输出目录
+    script_dir = Path(__file__).parent
+    # CONFIG['output_dir']是字符串，需要正确处理绝对路径和相对路径
+    output_dir_str = CONFIG['output_dir']
+    if Path(output_dir_str).is_absolute():
+        output_dir = Path(output_dir_str)
+    else:
+        output_dir = script_dir / output_dir_str
+    output_dir.mkdir(parents=True, exist_ok=True)
     filename = f"medical_test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
-    output_path = os.path.join(output_dir, filename)
+    output_path = output_dir / filename
     
-    with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-        df = pd.DataFrame(results)
-        df.to_excel(writer, sheet_name='Complete Test Results', index=False)
-        ws = writer.sheets['Complete Test Results']
+    logger.info(f"保存结果到: {output_path}")
+    try:
+        with pd.ExcelWriter(str(output_path), engine='openpyxl') as writer:
+            df = pd.DataFrame(results)
+            if df.empty:
+                logger.warning("没有结果数据可保存")
+                return
+            
+            df.to_excel(writer, sheet_name='Complete Test Results', index=False)
+            ws = writer.sheets['Complete Test Results']
 
-        column_widths = {
-            "A": 12,   # Question ID
-            "B": 50,   # Question (English)
-            "C": 40,   # Question (Chinese)
-            "D": 10,   # Status
-            "E": 120,  # Answer (English) 
-            "F": 90,   # Answer (Chinese) 
-            "G": 20    # Test Time
-        }
-        for col, width in column_widths.items():
-            ws.column_dimensions[col].width = width
+            column_widths = {
+                "A": 12,   # Question ID
+                "B": 50,   # Question (English)
+                "C": 40,   # Question (Chinese)
+                "D": 10,   # Status
+                "E": 120,  # Answer (English) 
+                "F": 90,   # Answer (Chinese) 
+                "G": 20    # Test Time
+            }
+            for col, width in column_widths.items():
+                ws.column_dimensions[col].width = width
+        
+        logger.info(f"结果已成功保存到: {output_path}")
+    except Exception as e:
+        logger.error(f"保存Excel文件时出错: {str(e)}", exc_info=True)
+        raise
     
 
     success_cnt = len([r for r in results if r["Status"] == "success"])
@@ -246,4 +325,24 @@ def batch_test_and_summary(test_questions):
     print(HEADER_SEPARATOR + "\n")
 
 if __name__ == "__main__":
-    batch_test_and_summary(test_questions)
+    try:
+        logger.info("=" * 80)
+        logger.info("开始微调模型测试")
+        logger.info(f"模型: {CONFIG['model_name']}")
+        logger.info(f"API地址: {CONFIG['openai_api_base']}")
+        logger.info(f"最大Token数: {MAX_TOKENS}")
+        logger.info(f"重试次数: {RETRY_TIMES}")
+        logger.info("=" * 80)
+        
+        batch_test_and_summary(test_questions)
+        
+        logger.info("=" * 80)
+        logger.info("测试完成")
+        logger.info("=" * 80)
+        
+    except KeyboardInterrupt:
+        logger.warning("用户中断测试")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"测试失败: {str(e)}", exc_info=True)
+        sys.exit(1)

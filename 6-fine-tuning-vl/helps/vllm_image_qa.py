@@ -1,6 +1,7 @@
 import base64
 import requests
 import json
+from pathlib import Path
 
 def encode_image(image_path):
     """将图片编码为 base64 字符串"""
@@ -59,9 +60,9 @@ def call_vllm_service(image_path, prompt, server_ip, port):
 
 def main():
     # 配置参数
-    import os
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    image_path = os.path.join(script_dir, "..", "test-img", "scan_item10-_71.jpg")
+    script_dir = Path(__file__).parent
+    # 使用Path对象处理相对路径，更可靠
+    image_path = (script_dir.parent / "test-img" / "scan_item10-_71.jpg").resolve()
     prompt = "解读这个医学报告，仅用一句话指出其中异常指标"
     server_ip = "124.156.193.94"
     port = 80
