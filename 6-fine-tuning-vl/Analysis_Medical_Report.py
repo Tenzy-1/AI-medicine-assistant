@@ -3,43 +3,40 @@ import matplotlib.pyplot as plt
 import os
 import re
 
-# -------------------------- Basic Configuration --------------------------
-# Configure font for English display
+# 配置英文显示字体
 plt.rcParams['font.sans-serif'] = ['Arial', 'Helvetica', 'DejaVu Sans']
-plt.rcParams['axes.unicode_minus'] = False  # Fix minus sign display issue
+plt.rcParams['axes.unicode_minus'] = False  # 修复负号显示问题
 
-# Professional Color Scheme (Medical Scenario Adaptation)
+# 专业配色方案（医疗场景适配）
 COLORS = {
-    "success": "#2E8B57",  # SeaGreen (Processing Success)
-    "fail": "#DC143C",  # Crimson (Processing Failure)
-    "valid": "#4169E1",  # RoyalBlue (Valid Data)
-    "incomplete": "#FF8C00",  # Orange (Incomplete Data)
-    "coagulation": "#9370DB",  # MediumPurple (Coagulation Test)
-    "blood_type": "#20B2AA",  # LightSeaGreen (Blood Type Test)
-    "hbv": "#32CD32",  # LimeGreen (HBV Panel Test)
-    "infectious": "#FF6347",  # Tomato (Infectious Disease Screen)
-    "missing_data": "#DAA520",  # Goldenrod (Missing Values/Reference Ranges)
-    "no_data": "#808080",  # Gray (No Valid Data Extracted)
-    "network_error": "#6A5ACD",  # SlateBlue (Network Error)
+    "success": "#2E8B57",  # 海绿色（处理成功）
+    "fail": "#DC143C",     # 深红色（处理失败）
+    "valid": "#4169E1",    # 皇家蓝（有效数据）
+    "incomplete": "#FF8C00",  # 橙红色（数据不完整）
+    "coagulation": "#9370DB", # 中紫色（凝血功能检测）
+    "blood_type": "#20B2AA",  # 浅海绿（血型检测）
+    "hbv": "#32CD32",         # 石灰绿（乙肝五项检测）
+    "infectious": "#FF6347",  # 番茄红（传染病筛查）
+    "missing_data": "#DAA520", # 金菊色（缺失数值/参考范围）
+    "no_data": "#808080",     # 灰色（未提取到有效数据）
+    "network_error": "#6A5ACD", # 石楠蓝（网络错误）
 }
 
-# Test results file path (Ensure this path is correct)
+# 测试结果文件路径（请确保该路径正确）
 RESULTS_FILE = "Medical_Report_Interpretation_Full_Report.txt"
-# Chart output directory
+# 图表输出目录
 OUTPUT_DIR = "./medical_vlm_visualization"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-# Excel report path
+# Excel报告路径
 EXCEL_OUTPUT_PATH = os.path.join(OUTPUT_DIR, "Medical_Report_Analysis_Statistics.xlsx")
 
-
-# -------------------------- Data Preprocessing Functions --------------------------
 def parse_test_results(result_file):
-    """Parse test result file and extract core data (Unified field names)"""
-    # 1. Check if file exists
+    """解析测试结果文件并提取核心数据（统一字段命名）"""
+    # 1. 检查文件是否存在
     if not os.path.exists(result_file):
-        print(f"Error: File not found - {result_file}")
-        print(f"Current working directory: {os.getcwd()}")
-        print(f"Files in current directory: {os.listdir('.')}")
+        print(f"错误：文件未找到 - {result_file}")
+        print(f"当前工作目录：{os.getcwd()}")
+        print(f"当前目录下的文件：{os.listdir('.')}")
         return {
             "stats": {"total": 0, "success": 0, "fail": 0, "valid": 0},
             "report_details": [],
@@ -47,13 +44,13 @@ def parse_test_results(result_file):
             "defect_counts": pd.Series()
         }
 
-    # 2. Read file content
+    # 2. 读取文件内容
     with open(result_file, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # 3. Handle empty file
+    # 3. 处理空文件情况
     if not content.strip():
-        print("Error: The result file is empty")
+        print("错误：结果文件为空")
         return {
             "stats": {"total": 0, "success": 0, "fail": 0, "valid": 0},
             "report_details": [],
@@ -61,7 +58,7 @@ def parse_test_results(result_file):
             "defect_counts": pd.Series()
         }
 
-    # 4. Extract statistical information
+    # 4. 提取统计信息
     stats_match = re.search(
         r'Statistics:\s*Total Reports\s*(\d+)\s*\|\s*Successfully Processed\s*(\d+)\s*\|\s*Failed\s*(\d+)\s*\|\s*Valid Data\s*(\d+)',
         content, re.IGNORECASE
@@ -76,19 +73,19 @@ def parse_test_results(result_file):
                 "valid": int(stats_match.group(4))
             }
         except (IndexError, ValueError) as e:
-            print(f"Warning: Failed to parse statistics - {e}")
+            print(f"警告：解析统计信息失败 - {e}")
     else:
-        print("Warning: Statistics information not found, will recalculate from report details")
+        print("警告：未找到统计信息，将从报告详情重新计算")
 
-    # 5. Extract detailed report information
-    # Keep Chinese separator in regex since source file contains Chinese sections
+    # 5. 提取报告详细信息
+    # 正则中保留中文分隔符，因源文件包含中文分段
     report_pattern = r'\[Report (\d+)\]\s+Image Filename:\s*(.*?)\s*\|\s*Processing Status:\s*(success|failed)\s*([\s\S]*?)=== 医疗报告完整分析（中文）===\n([\s\S]*?)(?=\n={100}|\Z)'
     reports = re.findall(report_pattern, content, re.MULTILINE)
 
     if not reports:
-        print("Warning: No report details matched! Debug info:")
-        print(f"First 500 characters of file content:\n{content[:500]}")
-        print(f"Regex pattern used:\n{report_pattern}")
+        print("警告：未匹配到任何报告详情！调试信息：")
+        print(f"文件内容前500字符：\n{content[:500]}")
+        print(f"使用的正则表达式：\n{report_pattern}")
         return {
             "stats": stats,
             "report_details": [],
@@ -96,88 +93,87 @@ def parse_test_results(result_file):
             "defect_counts": pd.Series()
         }
 
-    # 6. Process each report (KEY FIX: Unified field names with "Extracted" suffix)
     report_details = []
     for report in reports:
         no = int(report[0])
         img_filename = report[1].strip()
         status = report[2].lower()
-        chinese_content = report[4].strip()  # Keep Chinese content processing
+        chinese_content = report[4].strip()  # 保留中文内容处理逻辑
 
-        # Classify report type using Chinese keywords (critical for accurate classification)
+        # 使用中文关键词分类报告类型（分类准确性关键）
         if any(keyword in img_filename or keyword in chinese_content for keyword in
                ["血凝", "凝血", "PT", "APTT", "INR"]):
-            report_type = "Coagulation Test"
+            report_type = "凝血功能检测"
         elif any(keyword in img_filename or keyword in chinese_content for keyword in ["血型", "ABO", "RH"]):
-            report_type = "Blood Type Test"
+            report_type = "血型检测"
         elif any(keyword in img_filename or keyword in chinese_content for keyword in ["乙肝", "HBV", "前S1"]):
-            report_type = "HBV Panel Test"
+            report_type = "乙肝五项检测"
         elif any(keyword in img_filename or keyword in chinese_content for keyword in
                  ["丙肝", "HIV", "梅毒", "Anti-TP", "RPR"]):
-            report_type = "Infectious Disease Screen"
+            report_type = "传染病筛查"
         else:
-            report_type = "Other"
+            report_type = "其他类型"
 
-        # Evaluate data extraction completeness using Chinese content markers
+        # 使用中文内容标记评估数据提取完整性
         completeness = {
-            "Indicator Names": 1 if (re.search(r'1\.|2\.|3\.|4\.|5\.|6\.', chinese_content) or
-                                    any(kw in chinese_content for kw in ["丙肝抗体", "乙肝表面抗原", "ABO血型", "PT", "APTT"])) else 0,
-            "Specific Values": 1 if re.search(r'\d+(\.\d+)?\s*[a-zA-Z]+/[a-zA-Z]+|\d+(\.\d+)?\s*（|[\d\.]+', chinese_content) else 0,
-            "Reference Ranges": 1 if re.search(r'参考范围|参考区间', chinese_content) else 0,
-            "Abnormal Indicators": 1 if re.search(r'异常指标|无异常', chinese_content) else 0,
-            "Clinical Conclusions": 1 if re.search(r'临床意义|结论', chinese_content) else 0
+            "指标名称": 1 if (re.search(r'1\.|2\.|3\.|4\.|5\.|6\.', chinese_content) or
+                            any(kw in chinese_content for kw in ["丙肝抗体", "乙肝表面抗原", "ABO血型", "PT", "APTT"])) else 0,
+            "具体数值": 1 if re.search(r'\d+(\.\d+)?\s*[a-zA-Z]+/[a-zA-Z]+|\d+(\.\d+)?\s*（|[\d\.]+', chinese_content) else 0,
+            "参考范围": 1 if re.search(r'参考范围|参考区间', chinese_content) else 0,
+            "异常指标": 1 if re.search(r'异常指标|无异常', chinese_content) else 0,
+            "临床结论": 1 if re.search(r'临床意义|结论', chinese_content) else 0
         }
 
-        # Identify defects using Chinese error messages
+        # 使用中文错误信息识别缺陷类型
         defects = []
         if status == "failed":
-            defects.append("Network Error" if "Read timed out" in chinese_content else "Processing Failed")
+            defects.append("网络错误" if "Read timed out" in chinese_content else "处理失败")
         else:
             if "未提取到有效的医疗报告数据" in chinese_content:
-                defects.append("No Valid Data Extracted")
+                defects.append("未提取到有效数据")
             if "缺少具体指标数据" in chinese_content:
-                defects.append("Missing Values/Reference Ranges")
+                defects.append("缺失数值/参考范围")
 
-        # KEY FIX: Unified field names (all use "XXX Extracted" suffix)
+        # 核心修复：统一字段命名（均使用"XXX Extracted"后缀）
         report_details.append({
-            "Report No.": no,
-            "Image Filename": img_filename,
-            "Processing Status": status,
-            "Report Type": report_type,
-            "Completeness Score": sum(completeness.values()),
-            "Indicator Names Extracted": "Yes" if completeness["Indicator Names"] == 1 else "No",
-            "Specific Values Extracted": "Yes" if completeness["Specific Values"] == 1 else "No",
-            "Reference Ranges Extracted": "Yes" if completeness["Reference Ranges"] == 1 else "No",
-            "Abnormal Indicators Extracted": "Yes" if completeness["Abnormal Indicators"] == 1 else "No",
-            "Clinical Conclusions Extracted": "Yes" if completeness["Clinical Conclusions"] == 1 else "No",
-            "Defect Types": ", ".join(defects) if defects else "None",
-            "Defect Count": len(defects)
+            "报告编号": no,
+            "图片文件名": img_filename,
+            "处理状态": status,
+            "报告类型": report_type,
+            "完整性得分": sum(completeness.values()),
+            "指标名称提取状态": "是" if completeness["指标名称"] == 1 else "否",
+            "具体数值提取状态": "是" if completeness["具体数值"] == 1 else "否",
+            "参考范围提取状态": "是" if completeness["参考范围"] == 1 else "否",
+            "异常指标提取状态": "是" if completeness["异常指标"] == 1 else "否",
+            "临床结论提取状态": "是" if completeness["临床结论"] == 1 else "否",
+            "缺陷类型": ", ".join(defects) if defects else "无",
+            "缺陷数量": len(defects)
         })
 
-    # 7. Recalculate statistics
+    # 7. 重新计算统计信息
     total_reports = len(report_details)
-    success_reports = len([r for r in report_details if r["Processing Status"] == "success"])
+    success_reports = len([r for r in report_details if r["处理状态"] == "success"])
     fail_reports = total_reports - success_reports
     valid_reports = len([r for r in report_details if
-                         r["Processing Status"] == "success" and "No Valid Data Extracted" not in r["Defect Types"]])
+                         r["处理状态"] == "success" and "未提取到有效数据" not in r["缺陷类型"]])
     stats = {
         "total": total_reports,
         "success": success_reports,
         "fail": fail_reports,
         "valid": valid_reports
     }
-    print(f"Statistics confirmed: Total={total_reports}, Success={success_reports}, "
-          f"Fail={fail_reports}, Valid={valid_reports}")
+    print(f"统计信息已确认：总计={total_reports}, 成功={success_reports}, "
+          f"失败={fail_reports}, 有效={valid_reports}")
 
-    # 8. Count report type and defect distribution
+    # 8. 统计报告类型和缺陷分布
     type_counts = {}
     for r in report_details:
-        type_counts[r["Report Type"]] = type_counts.get(r["Report Type"], 0) + 1
+        type_counts[r["报告类型"]] = type_counts.get(r["报告类型"], 0) + 1
 
     all_defects = []
     for r in report_details:
-        if r["Defect Types"] != "None":
-            all_defects.extend(r["Defect Types"].split(", "))
+        if r["缺陷类型"] != "无":
+            all_defects.extend(r["缺陷类型"].split(", "))
     defect_counts = pd.Series(all_defects).value_counts()
 
     return {
@@ -187,16 +183,14 @@ def parse_test_results(result_file):
         "defect_counts": defect_counts
     }
 
-
-# -------------------------- Excel Report Generation Function --------------------------
 def generate_excel_report(data):
-    """Generate Excel report with unified field names"""
+    """生成包含统一字段命名的Excel报告"""
     with pd.ExcelWriter(EXCEL_OUTPUT_PATH, engine='openpyxl') as writer:
-        # Sheet 1: Summary Statistics
+        # 工作表1：汇总统计
         summary_df = pd.DataFrame({
-            "Metric": ["Total Reports", "Successfully Processed", "Processing Failed", "Valid Data Reports",
-                       "Success Rate", "Valid Data Rate"],
-            "Value": [
+            "指标": ["报告总数", "处理成功数", "处理失败数", "有效数据报告数",
+                       "处理成功率", "有效数据率"],
+            "数值": [
                 data["stats"]["total"],
                 data["stats"]["success"],
                 data["stats"]["fail"],
@@ -205,128 +199,127 @@ def generate_excel_report(data):
                 f"{(data['stats']['valid']/data['stats']['success']*100):.1f}%" if data['stats']['success']>0 else "0.0%"
             ]
         })
-        summary_df.to_excel(writer, sheet_name="Summary Statistics", index=False)
+        summary_df.to_excel(writer, sheet_name="汇总统计", index=False)
 
-        # Sheet 2: Detailed Report Info
+        # 工作表2：报告详细信息
         if data["report_details"]:
             report_df = pd.DataFrame(data["report_details"])
             column_order = [
-                "Report No.", "Image Filename", "Processing Status", "Report Type", "Completeness Score",
-                "Indicator Names Extracted", "Specific Values Extracted", "Reference Ranges Extracted",
-                "Abnormal Indicators Extracted", "Clinical Conclusions Extracted",
-                "Defect Types", "Defect Count"
+                "报告编号", "图片文件名", "处理状态", "报告类型", "完整性得分",
+                "指标名称提取状态", "具体数值提取状态", "参考范围提取状态",
+                "异常指标提取状态", "临床结论提取状态",
+                "缺陷类型", "缺陷数量"
             ]
             existing_cols = [col for col in column_order if col in report_df.columns]
-            report_df[existing_cols].to_excel(writer, sheet_name="Detailed Report Info", index=False)
+            report_df[existing_cols].to_excel(writer, sheet_name="报告详细信息", index=False)
         else:
             empty_df = pd.DataFrame({
-                "Report No.": [], "Image Filename": [], "Processing Status": [], "Report Type": [],
-                "Completeness Score": [], "Defect Types": [], "Defect Count": []
+                "报告编号": [], "图片文件名": [], "处理状态": [], "报告类型": [],
+                "完整性得分": [], "缺陷类型": [], "缺陷数量": []
             })
-            empty_df.to_excel(writer, sheet_name="Detailed Report Info", index=False)
+            empty_df.to_excel(writer, sheet_name="报告详细信息", index=False)
 
-        # Sheet 3: Report Type Distribution
+        # 工作表3：报告类型分布
         type_data = pd.DataFrame({
-            "Report Type": list(data["type_counts"].keys()),
-            "Count": list(data["type_counts"].values()),
-            "Percentage": [f"{(v/data['stats']['total']*100):.1f}%" for v in data["type_counts"].values()]
-        }) if data["type_counts"] else pd.DataFrame({"Report Type": [], "Count": [], "Percentage": []})
-        type_data.to_excel(writer, sheet_name="Report Type Distribution", index=False)
+            "报告类型": list(data["type_counts"].keys()),
+            "数量": list(data["type_counts"].values()),
+            "占比": [f"{(v/data['stats']['total']*100):.1f}%" for v in data["type_counts"].values()]
+        }) if data["type_counts"] else pd.DataFrame({"报告类型": [], "数量": [], "占比": []})
+        type_data.to_excel(writer, sheet_name="报告类型分布", index=False)
 
-        # Sheet 4: Defect Type Distribution
+        # 工作表4：缺陷类型分布
         if not data["defect_counts"].empty:
             defect_data = pd.DataFrame({
-                "Defect Type": data["defect_counts"].index.tolist(),
-                "Count": data["defect_counts"].values.tolist(),
-                "Percentage": [f"{(v/data['defect_counts'].sum()*100):.1f}%" for v in data["defect_counts"].values]
+                "缺陷类型": data["defect_counts"].index.tolist(),
+                "数量": data["defect_counts"].values.tolist(),
+                "占比": [f"{(v/data['defect_counts'].sum()*100):.1f}%" for v in data["defect_counts"].values]
             })
         else:
-            defect_data = pd.DataFrame({"Defect Type": ["None"], "Count": [0], "Percentage": ["100.0%"]})
-        defect_data.to_excel(writer, sheet_name="Defect Type Distribution", index=False)
+            defect_data = pd.DataFrame({"缺陷类型": ["无"], "数量": [0], "占比": ["100.0%"]})
+        defect_data.to_excel(writer, sheet_name="缺陷类型分布", index=False)
 
-        # Sheet 5: Completeness Score Analysis
+        # 工作表5：完整性得分分析
         if data["report_details"]:
             comp_df = pd.DataFrame(data["report_details"])
-            comp_analysis = comp_df.groupby("Completeness Score").agg({
-                "Report No.": "count",
-                "Processing Status": lambda x: (x == "success").sum()
-            }).rename(columns={"Report No.": "Total Reports", "Processing Status": "Successfully Processed"}).reset_index()
-            comp_analysis["Percentage"] = (comp_analysis["Total Reports"]/data["stats"]["total"]*100).round(1).astype(str)+"%"
+            comp_analysis = comp_df.groupby("完整性得分").agg({
+                "报告编号": "count",
+                "处理状态": lambda x: (x == "success").sum()
+            }).rename(columns={"报告编号": "报告总数", "处理状态": "处理成功数"}).reset_index()
+            comp_analysis["占比"] = (comp_analysis["报告总数"]/data["stats"]["total"]*100).round(1).astype(str)+"%"
         else:
             comp_analysis = pd.DataFrame({
-                "Completeness Score": [], "Total Reports": [], "Successfully Processed": [], "Percentage": []
+                "完整性得分": [], "报告总数": [], "处理成功数": [], "占比": []
             })
-        comp_analysis.to_excel(writer, sheet_name="Completeness Score Analysis", index=False)
+        comp_analysis.to_excel(writer, sheet_name="完整性得分分析", index=False)
 
-    print(f"Excel report generated successfully! Saved to: {EXCEL_OUTPUT_PATH}")
+    print(f"Excel报告生成成功！保存至：{EXCEL_OUTPUT_PATH}")
 
 
-# -------------------------- Chart Generation Functions --------------------------
 def plot_process_status(stats, output_path):
-    """Chart 1: Processing Status (Pie + Bar)"""
+    """图表1：处理状态分布（饼图 + 柱状图）"""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
-    # Pie chart
+    # 饼图
     sizes = [stats["success"], stats["fail"]]
     colors = [COLORS["success"], COLORS["fail"]]
     if sum(sizes) == 0:
-        ax1.text(0.5, 0.5, "No Data Available", ha='center', va='center', fontsize=18)
+        ax1.text(0.5, 0.5, "无可用数据", ha='center', va='center', fontsize=18)
     else:
-        ax1.pie(sizes, labels=[f"Success\n{sizes[0]}", f"Failure\n{sizes[1]}"],
+        ax1.pie(sizes, labels=[f"成功\n{sizes[0]}", f"失败\n{sizes[1]}"],
                 colors=colors, autopct='%1.1f%%', startangle=90, textprops={'fontsize': 16})
-    ax1.set_title("Model Processing Status Distribution", fontsize=18, fontweight='bold', pad=20)
+    ax1.set_title("模型处理状态分布", fontsize=18, fontweight='bold', pad=20)
 
-    # Bar chart
-    categories = ["Total", "Success", "Valid Data"]
+    # 柱状图
+    categories = ["总计", "成功", "有效数据"]
     values = [stats["total"], stats["success"], stats["valid"]]
     bars = ax2.bar(categories, values, color=[COLORS["incomplete"], COLORS["success"], COLORS["valid"]], alpha=0.8)
-    ax2.set_ylabel("Number of Reports", fontsize=16)
-    ax2.set_title("Report Count & Valid Data", fontsize=18, fontweight='bold', pad=20)
+    ax2.set_ylabel("报告数量", fontsize=16)
+    ax2.set_title("报告数量与有效数据统计", fontsize=18, fontweight='bold', pad=20)
     for bar, val in zip(bars, values):
         ax2.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.1, str(val), ha='center', va='bottom', fontweight='bold', fontsize=14)
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Chart 1 saved: {output_path}")
+    print(f"图表1已保存：{output_path}")
 
 
 def plot_report_type_performance(report_details, type_counts, output_path):
-    """Chart 2: Report Type Performance"""
+    """图表2：报告类型处理表现"""
     fig, ax = plt.subplots(figsize=(12, 7))
 
     if not type_counts:
-        ax.text(0.5, 0.5, "No Data Available", ha='center', va='center', fontsize=18)
-        ax.set_xlabel("Report Type", fontsize=16)
-        ax.set_ylabel("Number of Reports", fontsize=16)
-        ax.set_title("Processing Performance by Report Type", fontsize=18, fontweight='bold', pad=20)
+        ax.text(0.5, 0.5, "无可用数据", ha='center', va='center', fontsize=18)
+        ax.set_xlabel("报告类型", fontsize=16)
+        ax.set_ylabel("报告数量", fontsize=16)
+        ax.set_title("不同报告类型的处理表现", fontsize=18, fontweight='bold', pad=20)
         plt.tight_layout()
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"Chart 2 saved: {output_path}")
+        print(f"图表2已保存：{output_path}")
         return
 
-    # Calculate success/failure for each type
-    type_success = {t: len([r for r in report_details if r["Report Type"]==t and r["Processing Status"]=="success"])
+    # 计算各类型的成功/失败数量
+    type_success = {t: len([r for r in report_details if r["报告类型"]==t and r["处理状态"]=="success"])
                     for t in type_counts.keys()}
     type_fail = {t: type_counts[t]-type_success[t] for t in type_counts.keys()}
 
-    # Grouped bar chart
+    # 分组柱状图
     x = range(len(type_counts))
     width = 0.35
-    bars1 = ax.bar([i-width/2 for i in x], type_success.values(), width, label="Success", color=COLORS["success"], alpha=0.8)
-    bars2 = ax.bar([i+width/2 for i in x], type_fail.values(), width, label="Failure", color=COLORS["fail"], alpha=0.8)
+    bars1 = ax.bar([i-width/2 for i in x], type_success.values(), width, label="成功", color=COLORS["success"], alpha=0.8)
+    bars2 = ax.bar([i+width/2 for i in x], type_fail.values(), width, label="失败", color=COLORS["fail"], alpha=0.8)
 
-    # Chart config
-    ax.set_xlabel("Report Type", fontsize=16)
-    ax.set_ylabel("Number of Reports", fontsize=16)
-    ax.set_title("Processing Performance by Medical Report Type", fontsize=18, fontweight='bold', pad=20)
+    # 图表配置
+    ax.set_xlabel("报告类型", fontsize=16)
+    ax.set_ylabel("报告数量", fontsize=16)
+    ax.set_title("不同医疗报告类型的处理表现", fontsize=18, fontweight='bold', pad=20)
     ax.set_xticks(x)
     ax.set_xticklabels(type_counts.keys(), rotation=15, fontsize=14)
     ax.legend(fontsize=14)
     ax.grid(axis='y', alpha=0.3)
 
-    # Add value labels
+    # 添加数值标签
     for bars in [bars1, bars2]:
         for bar in bars:
             if bar.get_height() > 0:
@@ -336,47 +329,47 @@ def plot_report_type_performance(report_details, type_counts, output_path):
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Chart 2 saved: {output_path}")
+    print(f"图表2已保存：{output_path}")
 
 
 def plot_data_extraction_completeness(report_details, output_path):
-    """Chart 3: Data Extraction Completeness (Uses unified field names)"""
+    """图表3：数据提取完整性（使用统一字段命名）"""
     fig, ax = plt.subplots(figsize=(14, 8))
 
-    # Filter valid reports
+    # 筛选有效报告
     valid_reports = [r for r in report_details if
-                     r["Processing Status"]=="success" and "No Valid Data Extracted" not in r["Defect Types"]]
+                     r["处理状态"]=="success" and "未提取到有效数据" not in r["缺陷类型"]]
 
     if not valid_reports:
-        ax.text(0.5, 0.5, "No Valid Processed Reports", ha='center', va='center', fontsize=18)
-        ax.set_xlabel("Report No.", fontsize=16)
-        ax.set_ylabel("Extracted Dimensions (0-5)", fontsize=16)
-        ax.set_title("Data Extraction Completeness (Successfully Processed)", fontsize=18, fontweight='bold', pad=20)
+        ax.text(0.5, 0.5, "无有效处理完成的报告", ha='center', va='center', fontsize=18)
+        ax.set_xlabel("报告编号", fontsize=16)
+        ax.set_ylabel("提取维度数量 (0-5)", fontsize=16)
+        ax.set_title("数据提取完整性（处理成功的报告）", fontsize=18, fontweight='bold', pad=20)
         plt.tight_layout()
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"Chart 3 saved: {output_path}")
+        print(f"图表3已保存：{output_path}")
         return
 
-    # Prepare data (KEY FIX: Use unified field names with "Extracted" suffix)
-    report_nos = [r["Report No."] for r in valid_reports]
-    dims = ["Indicator Names", "Specific Values", "Reference Ranges", "Abnormal Indicators", "Clinical Conclusions"]
+    # 准备数据（核心修复：使用统一的"Extracted"后缀字段名）
+    report_nos = [r["报告编号"] for r in valid_reports]
+    dims = ["指标名称", "具体数值", "参考范围", "异常指标", "临床结论"]
     dim_data = {
-        dim: [1 if r[f"{dim} Extracted"] == "Yes" else 0 for r in valid_reports]
+        dim: [1 if r[f"{dim}提取状态"] == "是" else 0 for r in valid_reports]
         for dim in dims
     }
 
-    # Stacked bar chart
+    # 堆叠柱状图
     bottom = [0]*len(valid_reports)
     dim_colors = [COLORS["coagulation"], COLORS["blood_type"], COLORS["hbv"], COLORS["infectious"], COLORS["valid"]]
     for i, dim in enumerate(dims):
         ax.bar(report_nos, dim_data[dim], bottom=bottom, label=dim, color=dim_colors[i], alpha=0.8)
         bottom = [bottom[j]+dim_data[dim][j] for j in range(len(valid_reports))]
 
-    # Chart config
-    ax.set_xlabel("Report No.", fontsize=16)
-    ax.set_ylabel("Number of Fully Extracted Dimensions (0-5)", fontsize=16)
-    ax.set_title("Medical Report Data Extraction Completeness", fontsize=18, fontweight='bold', pad=20)
+    # 图表配置
+    ax.set_xlabel("报告编号", fontsize=16)
+    ax.set_ylabel("完全提取的维度数量 (0-5)", fontsize=16)
+    ax.set_title("医疗报告数据提取完整性", fontsize=18, fontweight='bold', pad=20)
     ax.set_xticks(report_nos)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
@@ -384,40 +377,40 @@ def plot_data_extraction_completeness(report_details, output_path):
     ax.legend(loc='upper right', fontsize=14)
     ax.grid(axis='y', alpha=0.3)
 
-    # Add completeness scores
+    # 添加完整性得分标签
     scores = [sum([dim_data[dim][j] for dim in dims]) for j in range(len(valid_reports))]
     for no, score in zip(report_nos, scores):
-        ax.text(no, score+0.1, f"Score: {score}", ha='center', va='bottom', fontweight='bold', fontsize=14)
+        ax.text(no, score+0.1, f"得分：{score}", ha='center', va='bottom', fontweight='bold', fontsize=14)
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Chart 3 saved: {output_path}")
+    print(f"图表3已保存：{output_path}")
 
 
 def plot_defect_distribution(defect_counts, report_details, output_path):
-    """Chart 4: Defect Distribution"""
+    """图表4：缺陷分布情况"""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
-    # Pie chart for defect types
+    # 缺陷类型饼图
     if not defect_counts.empty:
         labels = defect_counts.index.tolist()
         sizes = defect_counts.values.tolist()
         defect_color_map = {
-            "Missing Values/Reference Ranges": COLORS["missing_data"],
-            "No Valid Data Extracted": COLORS["no_data"],
-            "Network Error": COLORS["network_error"],
-            "Processing Failed": COLORS["fail"]
+            "缺失数值/参考范围": COLORS["missing_data"],
+            "未提取到有效数据": COLORS["no_data"],
+            "网络错误": COLORS["network_error"],
+            "处理失败": COLORS["fail"]
         }
         colors = [defect_color_map.get(label, COLORS["incomplete"]) for label in labels]
         ax1.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, textprops={'fontsize': 16})
     else:
-        ax1.text(0.5, 0.5, "No Defects", ha='center', va='center', fontsize=18)
-    ax1.set_title("Defect Type Distribution", fontsize=18, fontweight='bold', pad=20)
+        ax1.text(0.5, 0.5, "无缺陷", ha='center', va='center', fontsize=18)
+    ax1.set_title("缺陷类型分布", fontsize=18, fontweight='bold', pad=20)
 
-    # Bar chart for defect count per report
-    defect_reports = {f"Report {r['Report No.']}": r["Defect Count"]
-                     for r in report_details if r["Defect Count"] > 0}
+    # 单报告缺陷数量柱状图
+    defect_reports = {f"报告 {r['报告编号']}": r["缺陷数量"]
+                     for r in report_details if r["缺陷数量"] > 0}
     if defect_reports:
         sorted_reports = sorted(defect_reports.items(), key=lambda x: x[1], reverse=True)
         labels, counts = zip(*sorted_reports)
@@ -426,103 +419,103 @@ def plot_defect_distribution(defect_counts, report_details, output_path):
         for i, v in enumerate(counts):
             ax2.text(v+0.05, i, str(v), ha='left', va='center', fontweight='bold', fontsize=14)
     else:
-        ax2.text(0.5, 0.5, "No Defective Reports", ha='center', va='center', fontsize=18)
-    ax2.set_xlabel("Number of Defects", fontsize=16)
-    ax2.set_title("Defect Count per Report", fontsize=18, fontweight='bold', pad=20)
+        ax2.text(0.5, 0.5, "无缺陷报告", ha='center', va='center', fontsize=18)
+    ax2.set_xlabel("缺陷数量", fontsize=16)
+    ax2.set_title("单报告缺陷数量统计", fontsize=18, fontweight='bold', pad=20)
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Chart 4 saved: {output_path}")
+    print(f"图表4已保存：{output_path}")
 
 
 def plot_cross_modal_alignment(report_details, output_path):
-    """Chart 5: Cross-Modal Alignment (Match target structure + Fix tight_layout warning)"""
+    """图表5：跨模态对齐分析（匹配目标结构 + 修复tight_layout警告）"""
     try:
         plt.style.use('seaborn-v0_8-whitegrid')
     except OSError:
-        # Fallback for newer matplotlib versions
+        # 适配新版matplotlib的降级方案
         plt.style.use('seaborn-v0_8')
-    # 2x2 layout matching target structure
+    # 2x2布局匹配目标图表结构
     fig, axes = plt.subplots(2, 2, figsize=(9, 7), gridspec_kw={'wspace': 0.2, 'hspace': 0.2})
-    axes = axes.flatten()  # Convert to 1D array for easy iteration
+    axes = axes.flatten()  # 转换为一维数组便于遍历
 
-    # Status color palette (matches target chart)
+    # 状态配色方案（匹配目标图表）
     status_colors = {
-        "perfect": "#d9e6a7",  # Light green (Score 5)
-        "good": "#c9e3f8",  # Light blue (Score 3-4)
-        "poor": "#f8d0d8"  # Pink (Score <3)
+        "perfect": "#d9e6a7",  # 浅绿（得分5分）
+        "good": "#c9e3f8",     # 浅蓝（得分3-4分）
+        "poor": "#f8d0d8"      # 粉色（得分<3分）
     }
 
-    # Sample type order (corresponds to 2x2 layout)
+    # 样本类型顺序（对应2x2布局）
     sample_types = [
-        "Coagulation Test",
-        "Blood Type Test",
-        "HBV Panel Test",
-        "Infectious Disease Screen"
+        "凝血功能检测",
+        "血型检测",
+        "乙肝五项检测",
+        "传染病筛查"
     ]
-    success_reports = [r for r in report_details if r["Processing Status"] == "success"]
+    success_reports = [r for r in report_details if r["处理状态"] == "success"]
 
-    # Handle case with no successful reports
+    # 处理无成功报告的情况
     if not success_reports:
         for ax in axes:
-            ax.text(0.5, 0.5, "No Successful Reports", ha='center', va='center', transform=ax.transAxes, fontsize=14)
+            ax.text(0.5, 0.5, "无成功处理的报告", ha='center', va='center', transform=ax.transAxes, fontsize=14)
             ax.axis('off')
     else:
-        # Select sample reports matching target chart (prioritize matching Report No.)
+        # 选择匹配目标图表的样本报告（优先匹配报告编号）
         sample_reports = []
         for target_type in sample_types:
-            # Target Report No. matching target chart
+            # 目标报告编号（匹配目标图表）
             target_report_nos = {
-                "Coagulation Test": 3,
-                "Blood Type Test": 2,
-                "HBV Panel Test": 10,
-                "Infectious Disease Screen": 5
+                "凝血功能检测": 3,
+                "血型检测": 2,
+                "乙肝五项检测": 10,
+                "传染病筛查": 5
             }
             target_no = target_report_nos[target_type]
-            # First try to find report with matching No. and Type, else fallback
+            # 优先查找编号和类型匹配的报告，否则降级匹配类型
             target_report = next(
-                (r for r in success_reports if r["Report No."] == target_no and r["Report Type"] == target_type),
-                next((r for r in success_reports if r["Report Type"] == target_type), success_reports[0])
+                (r for r in success_reports if r["报告编号"] == target_no and r["报告类型"] == target_type),
+                next((r for r in success_reports if r["报告类型"] == target_type), success_reports[0])
             )
             sample_reports.append(target_report)
 
-        # Plot each sub-module (matches target chart structure)
+        # 绘制每个子模块（匹配目标图表结构）
         for idx, (ax, report) in enumerate(zip(axes, sample_reports)):
             report_type = sample_types[idx]
-            score = report["Completeness Score"]
+            score = report["完整性得分"]
 
-            # Determine status and evaluation text based on score
+            # 根据得分确定状态和评估文本
             if score == 5:
                 status = "perfect"
-                eval_text = "□ Image→Text fully aligned\nAll information accurately extracted"
+                eval_text = "□ 图像→文本完全对齐\n所有信息准确提取"
             elif 3 <= score <= 4:
                 status = "good"
-                eval_text = "□ Core information aligned\nPartial secondary information missing"
+                eval_text = "□ 核心信息对齐\n部分次要信息缺失"
             else:
                 status = "poor"
-                eval_text = "□ Critical information alignment insufficient\nNeeds priority optimization"
+                eval_text = "□ 关键信息对齐度不足\n需优先优化"
 
-            # Info box content (matches target chart exactly)
+            # 信息框内容（完全匹配目标图表）
             info_text = (
-                f"Report No.: {report['Report No.']}\n"
-                f"Type: {report_type}\n"
-                f"Status: SUCCESS\n"
-                f"Score: {score}/5\n"
-                f"Defects: {report['Defect Types']}\n\n"
-                "Alignment Evaluation:\n"
+                f"报告编号：{report['报告编号']}\n"
+                f"类型：{report_type}\n"
+                f"状态：处理成功\n"
+                f"得分：{score}/5\n"
+                f"缺陷：{report['缺陷类型']}\n\n"
+                "对齐性评估：\n"
                 f"{eval_text}"
             )
 
-            # 1. Sub-module title (above info box)
+            # 1. 子模块标题（信息框上方）
             ax.text(
                 0.5, 0.96,
-                f"Cross-Modal Alignment – {report_type}",
+                f"跨模态对齐分析 – {report_type}",
                 ha='center', va='top', transform=ax.transAxes,
                 fontweight='bold', fontsize=12
             )
 
-            # 2. Info box (centered display)
+            # 2. 信息框（居中显示）
             ax.text(
                 0.5, 0.42,
                 info_text,
@@ -536,12 +529,12 @@ def plot_cross_modal_alignment(report_details, output_path):
                 )
             )
 
-            # Hide axes
+            # 隐藏坐标轴
             ax.axis('off')
 
-    # Main title (matches target chart)
+    # 主标题（匹配目标图表）
     plt.suptitle(
-        "Medical Report Cross-Modal (Image→Text) Alignment Quality Comparison",
+        "医疗报告跨模态（图像→文本）对齐质量对比",
         fontsize=16, fontweight='bold', y=0.98
     )
 
@@ -555,7 +548,7 @@ def plot_cross_modal_alignment(report_details, output_path):
         hspace=0.45   # 子图垂直间距
     )
 
-    # Save chart
+    # 保存图表
     plt.savefig(
         output_path,
         dpi=300,
@@ -563,34 +556,30 @@ def plot_cross_modal_alignment(report_details, output_path):
         facecolor='white'
     )
     plt.close()
-    print(f"Chart 5 saved: {output_path}")
+    print(f"图表5已保存：{output_path}")
 
-
-# -------------------------- Main Execution Function --------------------------
 def generate_all_vlm_charts():
-    """Main function to generate all outputs"""
+    """生成所有输出结果的主函数"""
     try:
-        # Data preprocessing
+        # 数据预处理
         data = parse_test_results(RESULTS_FILE)
 
-        # Generate Excel report
+        # 生成Excel报告
         generate_excel_report(data)
 
-        # Generate charts
-        plot_process_status(data["stats"], os.path.join(OUTPUT_DIR, "1_Processing_Status.png"))
-        plot_report_type_performance(data["report_details"], data["type_counts"], os.path.join(OUTPUT_DIR, "2_Report_Type_Performance.png"))
-        plot_data_extraction_completeness(data["report_details"], os.path.join(OUTPUT_DIR, "3_Extraction_Completeness.png"))
-        plot_defect_distribution(data["defect_counts"], data["report_details"], os.path.join(OUTPUT_DIR, "4_Defect_Distribution.png"))
-        plot_cross_modal_alignment(data["report_details"], os.path.join(OUTPUT_DIR, "5_Cross_Modal_Alignment.png"))
+        # 生成图表
+        plot_process_status(data["stats"], os.path.join(OUTPUT_DIR, "1_处理状态分布.png"))
+        plot_report_type_performance(data["report_details"], data["type_counts"], os.path.join(OUTPUT_DIR, "2_报告类型处理表现.png"))
+        plot_data_extraction_completeness(data["report_details"], os.path.join(OUTPUT_DIR, "3_数据提取完整性.png"))
+        plot_defect_distribution(data["defect_counts"], data["report_details"], os.path.join(OUTPUT_DIR, "4_缺陷分布情况.png"))
+        plot_cross_modal_alignment(data["report_details"], os.path.join(OUTPUT_DIR, "5_跨模态对齐分析.png"))
 
-        print(f"\nAll outputs generated successfully! Saved to: {OUTPUT_DIR}")
+        print(f"\n所有输出结果生成成功！保存至：{OUTPUT_DIR}")
 
     except Exception as e:
-        print(f"Error during execution: {e}")
+        print(f"执行过程中出错：{e}")
         import traceback
         traceback.print_exc()
 
-
-# -------------------------- Execution Entry --------------------------
 if __name__ == "__main__":
     generate_all_vlm_charts()

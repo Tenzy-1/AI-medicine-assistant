@@ -1,0 +1,18 @@
+
+conda create -n vllm-env python=3.10 -y
+
+conda activate vllm-env
+pip install torch==2.6.0
+
+pip install vllm
+
+pip install bitsandbytes
+
+conda deactivate
+
+(base) python 3-fine-tuning-llm/3-test-fine-tuned-llm.py
+
+(base) python 3-fine-tuning-llm/4-medical_test_results_by_llm.py
+
+
+(vllm-env) vllm serve /workspace/qwen25-14b-offical-finetuned-bnb-4bit --host 0.0.0.0 --port 80 --max-model-len=1024 --gpu-memory-utilization 0.45 --tensor-parallel-size 1 --enforce-eager --kv-cache-dtype fp8_e4m3
